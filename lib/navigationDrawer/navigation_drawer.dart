@@ -7,97 +7,94 @@ import '../home.dart';
 import '../auth/sign_in.dart';
 import '../auth/sign_up.dart';
 
-class navigationDrawer extends StatelessWidget {
+const String _baseURL = 'https://nasserhotel.000webhostapp.com/';
+
+class navigationDrawer extends StatefulWidget {
   const navigationDrawer({Key? key}) : super(key: key);
 
+  @override
+  _navigationDrawerState createState() => _navigationDrawerState();
+}
+
+class _navigationDrawerState extends State<navigationDrawer> {
   @override
   Widget build(BuildContext context) {
     var authProvider = Provider.of<AuthProvider>(context);
     bool isLoggedIn = authProvider.isLoggedIn;
-    String? userName = authProvider.firstName;
+    String? fName = authProvider.firstName;
+    String? email = authProvider.email;
+    String? profileImage = authProvider.profileImage;
 
     return Drawer(
-      child: ListView(
-        padding: EdgeInsets.zero,
-        children: <Widget>[
-          DrawerHeader(
-            decoration: BoxDecoration(
-              color: Colors.blue,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Nasser Hotel',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
-                  ),
+      child: Theme(
+        data: ThemeData(
+          brightness: authProvider.isDarkMode ? Brightness.dark : Brightness.light,
+          canvasColor: authProvider.isDarkMode ? Colors.grey[850] : Colors.white,
+        ),
+        child: Container(
+          color: authProvider.isDarkMode ? Colors.grey[850] : Colors.white,
+          child: Column(
+          children: <Widget>[
+            UserAccountsDrawerHeader(
+              accountName: isLoggedIn ? Text(fName!) : null,
+              accountEmail: isLoggedIn ? Text(email!) : null,
+              currentAccountPicture: CircleAvatar(
+                backgroundImage: NetworkImage(
+                  '$_baseURL/assets/picture/profiles/$profileImage',
                 ),
-                if (isLoggedIn)
-                  Text(
-                    'Welcome, $userName!',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                    ),
-                  )
-                else
-                  Text(
-                    'Please sign in',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                    ),
-                  ),
-              ],
+              ),
+              decoration: BoxDecoration(
+                color: authProvider.isDarkMode ? Colors.grey[650] : Colors.blue,
+              ),
             ),
-          ),
-          buildDrawerItem(
-            title: 'Book Room',
-            onTap: () => navigateToPage(context, ShowRooms()),
-          ),
-          buildDrawerItem(
-            title: 'Book Event',
-            onTap: () => navigateToPage(context, ShowEvents()),
-          ),
-          if (isLoggedIn)
-            buildDrawerItem(
-              title: 'Dashboard',
-              onTap: () => navigateToPage(context, DashboardPage()),
+            ListTile(
+              title: Text('Book Room'),
+              onTap: () => navigateToPage(context, ShowRooms()),
             ),
-          if (isLoggedIn)
-            buildDrawerItem(
-              title: 'Logout',
-              onTap: () {
-                authProvider.logout();
-                Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (context) => SignInPage()),
-                );
-              },
+            ListTile(
+              title: Text('Book Event'),
+              onTap: () => navigateToPage(context, ShowEvents()),
             ),
-          if (!isLoggedIn)
-            buildDrawerItem(
-              title: 'Sign In',
-              onTap: () => navigateToPage(context, SignInPage()),
+            if (isLoggedIn)
+              ListTile(
+                title: Text('Dashboard'),
+                onTap: () => navigateToPage(context, DashboardPage()),
+              ),
+            if (isLoggedIn)
+              ListTile(
+                title: Text('Logout'),
+                onTap: () {
+                  authProvider.logout();
+                  Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(builder: (context) => SignInPage()),
+                  );
+                },
+              ),
+            if (!isLoggedIn)
+              ListTile(
+                title: Text('Sign In'),
+                onTap: () => navigateToPage(context, SignInPage()),
+              ),
+            if (!isLoggedIn)
+              ListTile(
+                title: Text('Sign Up'),
+                onTap: () => navigateToPage(context, SignUpPage()),
+              ),
+            Spacer(),
+            ListTile(
+              title: Text('Dark Mode'),
+              trailing: Switch(
+                value: authProvider.isDarkMode,
+                onChanged: (value) {
+                  setState(() {
+                    authProvider.toggleDarkMode(value);
+                  });
+                },
+              ),
             ),
-          if (!isLoggedIn)
-            buildDrawerItem(
-              title: 'Sign Up',
-              onTap: () => navigateToPage(context, SignUpPage()),
-            ),
-        ],
+          ],
+        ),)
       ),
-    );
-  }
-
-  ListTile buildDrawerItem({
-    required String title,
-    required VoidCallback onTap,
-  }) {
-    return ListTile(
-      title: Text(title),
-      onTap: onTap,
     );
   }
 
@@ -109,7 +106,7 @@ class navigationDrawer extends StatelessWidget {
         const end = Offset.zero;
         const curve = Curves.easeInOutQuad;
         var tween =
-            Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+        Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
         var offsetAnimation = animation.drive(tween);
         return SlideTransition(position: offsetAnimation, child: child);
       },

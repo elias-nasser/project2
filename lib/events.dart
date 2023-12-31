@@ -3,7 +3,9 @@ import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
 
 import 'package:project2/navigationDrawer/navigation_drawer.dart';
+import 'package:provider/provider.dart';
 import '../auth/sign_up.dart';
+import 'auth/auth_provider.dart';
 import 'booking/bookEvent.dart';
 import 'booking/bookRoom.dart';
 
@@ -25,7 +27,14 @@ class _ShowEventsState extends State<ShowEvents> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    var authProvider = Provider.of<AuthProvider>(context);
+
+    return Theme(
+        data: ThemeData(
+          brightness: authProvider.isDarkMode ? Brightness.dark : Brightness.light,
+          canvasColor: authProvider.isDarkMode ? Colors.grey[850] : Colors.white,
+        ),
+        child: Scaffold(
       appBar: AppBar(
         title: const Text('Available Events'),
         centerTitle: true,
@@ -48,7 +57,7 @@ class _ShowEventsState extends State<ShowEvents> {
                 ),
               ),
             ),
-    );
+    ));
   }
 
   Widget buildEvent(Map<String, dynamic> event) {

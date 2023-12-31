@@ -54,7 +54,13 @@ class _DashboardPageState extends State<DashboardPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    var authProvider = Provider.of<AuthProvider>(context);
+    return Theme(
+        data: ThemeData(
+          brightness: authProvider.isDarkMode ? Brightness.dark : Brightness.light,
+          canvasColor: authProvider.isDarkMode ? Colors.grey[850] : Colors.white,
+        ),
+      child : Scaffold(
       appBar: AppBar(
         title: Text('Dashboard'),
       ),
@@ -89,7 +95,7 @@ class _DashboardPageState extends State<DashboardPage> {
                 ),
               ),
             ),
-    );
+    ));
   }
 }
 

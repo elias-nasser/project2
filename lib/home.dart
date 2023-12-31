@@ -27,7 +27,12 @@ class _ShowRoomsState extends State<ShowRooms> {
   Widget build(BuildContext context) {
     var authProvider = Provider.of<AuthProvider>(context);
     print('User ID: ${authProvider.userId}');
-    return Scaffold(
+    return Theme(
+        data: ThemeData(
+          brightness: authProvider.isDarkMode ? Brightness.dark : Brightness.light,
+          canvasColor: authProvider.isDarkMode ? Colors.grey[850] : Colors.white,
+        ),
+      child: Scaffold(
       appBar: AppBar(
         title: const Text('Available Rooms'),
         centerTitle: true,
@@ -41,16 +46,16 @@ class _ShowRoomsState extends State<ShowRooms> {
               onRefresh: () async {
                 await updateRooms();
               },
-              child: SingleChildScrollView(
-                physics: AlwaysScrollableScrollPhysics(),
-                child: Column(
-                  children: _rooms.map((room) {
-                    return buildRoom(room);
-                  }).toList(),
+                child: SingleChildScrollView(
+                  physics: AlwaysScrollableScrollPhysics(),
+                  child: Column(
+                    children: _rooms.map((room) {
+                      return buildRoom(room);
+                    }).toList(),
+                  ),
                 ),
               ),
-            ),
-    );
+    ));
   }
 
   Widget buildRoom(Map<String, dynamic> room) {
@@ -61,8 +66,7 @@ class _ShowRoomsState extends State<ShowRooms> {
       padding: EdgeInsets.all(10),
       decoration: BoxDecoration(
         border: Border.all(color: Colors.grey),
-        borderRadius: BorderRadius.circular(
-            10),
+        borderRadius: BorderRadius.circular(10),
       ),
       child: Column(
         children: [

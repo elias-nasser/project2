@@ -30,147 +30,158 @@ class _RoomBookingPageState extends State<RoomBookingPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: Text('Room Booking - ${widget.room['RoomType']}'),
-          centerTitle: true,
+    var authProvider = Provider.of<AuthProvider>(context);
+
+    return Theme(
+        data: ThemeData(
+          brightness:
+              authProvider.isDarkMode ? Brightness.dark : Brightness.light,
+          canvasColor:
+              authProvider.isDarkMode ? Colors.grey[850] : Colors.white,
         ),
-        body: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Image.network(
-                  '$_baseURL/assets/picture/RoomType/' +
-                      widget.room['RoomImage'],
-                  fit: BoxFit.cover,
-                  height: 300,
-                ),
-                SizedBox(height: 16),
-                Text('Room Type: ${widget.room['RoomType']}'),
-                Text('Cost: \$${widget.room['Cost']} per night'),
-                SizedBox(height: 16),
-                Text(
-                  'Please enter your details to book the room:',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                SizedBox(height: 16),
-                TextFormField(
-                  controller: _emailController,
-                  decoration: InputDecoration(labelText: 'Email'),
-                  keyboardType: TextInputType.emailAddress,
-                ),
-                TextFormField(
-                  controller: _contactNoController,
-                  decoration: InputDecoration(labelText: 'Phone'),
-                  keyboardType: TextInputType.phone,
-                ),
-                DropdownButtonFormField<int>(
-                  value: numberOfGuests,
-                  onChanged: (value) {
-                    setState(() {
-                      numberOfGuests = value!;
-                    });
-                  },
-                  items: [1, 2, 3, 4].map((guests) {
-                    return DropdownMenuItem<int>(
-                      value: guests,
-                      child: Text('$guests Guest(s)'),
-                    );
-                  }).toList(),
-                  decoration: InputDecoration(labelText: 'Number of Guests'),
-                ),
-                SizedBox(height: 16),
-                Row(
+        child: Scaffold(
+            appBar: AppBar(
+              title: Text('Room Booking - ${widget.room['RoomType']}'),
+              centerTitle: true,
+            ),
+            body: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: () async {
-                          final pickedDate = await showDatePicker(
-                            context: context,
-                            initialDate: DateTime.now(),
-                            firstDate: DateTime.now(),
-                            lastDate: DateTime(2101),
-                          );
-                          if (pickedDate != null && pickedDate != checkInDate) {
-                            setState(() {
-                              checkInDate = pickedDate;
-                            });
-                          }
-                        },
-                        child: Text(
-                          checkInDate == null
-                              ? 'Check-In Date'
-                              : 'Check-In: ${checkInDate!.toLocal()}'
-                                  .split(' ')[0],
-                        ),
-                      ),
+                    Image.network(
+                      '$_baseURL/assets/picture/RoomType/' +
+                          widget.room['RoomImage'],
+                      fit: BoxFit.cover,
+                      height: 300,
                     ),
-                    SizedBox(width: 16),
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: () async {
-                          final pickedDate = await showDatePicker(
-                            context: context,
-                            initialDate: DateTime.now(),
-                            firstDate: DateTime.now(),
-                            lastDate: DateTime(2101),
-                          );
-                          if (pickedDate != null &&
-                              pickedDate != checkOutDate) {
-                            setState(() {
-                              checkOutDate = pickedDate;
-                            });
-                          }
-                        },
-                        child: Text(
-                          checkOutDate == null
-                              ? 'Check-Out Date'
-                              : 'Check-Out: ${checkOutDate!.toLocal()}'
-                                  .split(' ')[0],
+                    SizedBox(height: 16),
+                    Text('Room Type: ${widget.room['RoomType']}'),
+                    Text('Cost: \$${widget.room['Cost']} per night'),
+                    SizedBox(height: 16),
+                    Text(
+                      'Please enter your details to book the room:',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(height: 16),
+                    TextFormField(
+                      controller: _emailController,
+                      decoration: InputDecoration(labelText: 'Email'),
+                      keyboardType: TextInputType.emailAddress,
+                    ),
+                    TextFormField(
+                      controller: _contactNoController,
+                      decoration: InputDecoration(labelText: 'Phone'),
+                      keyboardType: TextInputType.phone,
+                    ),
+                    DropdownButtonFormField<int>(
+                      value: numberOfGuests,
+                      onChanged: (value) {
+                        setState(() {
+                          numberOfGuests = value!;
+                        });
+                      },
+                      items: [1, 2, 3, 4].map((guests) {
+                        return DropdownMenuItem<int>(
+                          value: guests,
+                          child: Text('$guests Guest(s)'),
+                        );
+                      }).toList(),
+                      decoration:
+                          InputDecoration(labelText: 'Number of Guests'),
+                    ),
+                    SizedBox(height: 16),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: () async {
+                              final pickedDate = await showDatePicker(
+                                context: context,
+                                initialDate: DateTime.now(),
+                                firstDate: DateTime.now(),
+                                lastDate: DateTime(2101),
+                              );
+                              if (pickedDate != null &&
+                                  pickedDate != checkInDate) {
+                                setState(() {
+                                  checkInDate = pickedDate;
+                                });
+                              }
+                            },
+                            child: Text(
+                              checkInDate == null
+                                  ? 'Check-In Date'
+                                  : 'Check-In: ${checkInDate!.toLocal()}'
+                                      .split(' ')[0],
+                            ),
+                          ),
                         ),
-                      ),
+                        SizedBox(width: 16),
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: () async {
+                              final pickedDate = await showDatePicker(
+                                context: context,
+                                initialDate: DateTime.now(),
+                                firstDate: DateTime.now(),
+                                lastDate: DateTime(2101),
+                              );
+                              if (pickedDate != null &&
+                                  pickedDate != checkOutDate) {
+                                setState(() {
+                                  checkOutDate = pickedDate;
+                                });
+                              }
+                            },
+                            child: Text(
+                              checkOutDate == null
+                                  ? 'Check-Out Date'
+                                  : 'Check-Out: ${checkOutDate!.toLocal()}'
+                                      .split(' ')[0],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 16),
+                    Text(
+                      'Total Cost: \$${(int.parse(widget.room['Cost']) * (checkOutDate?.difference(checkInDate ?? DateTime.now()).inDays ?? 0)).toInt()}',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: () {
+                        bookRoom(
+                          update,
+                          widget.room['RoomTypeId'],
+                          _emailController.text,
+                          _contactNoController.text,
+                          numberOfGuests,
+                          checkInDate ?? DateTime.now(),
+                          checkOutDate ?? DateTime.now(),
+                          (int.parse(widget.room['Cost']) *
+                                  (checkOutDate
+                                          ?.difference(
+                                              checkInDate ?? DateTime.now())
+                                          .inDays ??
+                                      0))
+                              .toInt(),
+                          Provider.of<AuthProvider>(context, listen: false)
+                                  .userId ??
+                              '0',
+                        );
+                        update('Booking room: ${widget.room['RoomType']}');
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => DashboardPage()));
+                      },
+                      child: Text('Book Room'),
                     ),
                   ],
                 ),
-                SizedBox(height: 16),
-                Text(
-                  'Total Cost: \$${(int.parse(widget.room['Cost']) * (checkOutDate?.difference(checkInDate ?? DateTime.now()).inDays ?? 0)).toInt()}',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: () {
-                    bookRoom(
-                      update,
-                      widget.room['RoomTypeId'],
-                      _emailController.text,
-                      _contactNoController.text,
-                      numberOfGuests,
-                      checkInDate ?? DateTime.now(),
-                      checkOutDate ?? DateTime.now(),
-                      (int.parse(widget.room['Cost']) *
-                              (checkOutDate
-                                      ?.difference(
-                                          checkInDate ?? DateTime.now())
-                                      .inDays ??
-                                  0))
-                          .toInt(),
-                      Provider.of<AuthProvider>(context, listen: false)
-                              .userId ??
-                          '0',
-                    );
-                    update('Booking room: ${widget.room['RoomType']}');
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => DashboardPage()));
-                  },
-                  child: Text('Book Room'),
-                ),
-              ],
-            ),
-          ),
-        ));
+              ),
+            )));
   }
 }
 
@@ -185,8 +196,7 @@ void bookRoom(
     int totalCost,
     String userId) async {
   try {
-    final url = Uri.parse(
-        '$_baseURL/addBookRoom.php');
+    final url = Uri.parse('$_baseURL/addBookRoom.php');
 
     final response = await http.post(
       url,
@@ -205,7 +215,6 @@ void bookRoom(
     print(room);
 
     if (response.statusCode == 200) {
-
       print('Server response: ${response.body}');
       updateUser(response.body);
     } else {

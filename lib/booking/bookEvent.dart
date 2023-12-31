@@ -32,149 +32,158 @@ class _EventBookingPageState extends State<EventBookingPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Event Booking - ${widget.event['EventType']}'),
-        centerTitle: true,
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Image.network(
-                '$_baseURL/assets/picture/EventType/' +
-                    widget.event['EventImage'],
-                fit: BoxFit.cover,
-                height: 300,
-              ),
-              SizedBox(height: 16),
-              Text('Event Type: ${widget.event['EventType']}'),
-              Text('Cost: \$${widget.event['Cost']}'),
-              SizedBox(height: 16),
-              Text(
-                'Please enter your details to book the event:',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 16),
-              TextFormField(
-                controller: _emailController,
-                decoration: InputDecoration(labelText: 'Email'),
-                keyboardType: TextInputType.emailAddress,
-              ),
-              TextFormField(
-                controller: _contactNoController,
-                decoration: InputDecoration(labelText: 'Phone'),
-                keyboardType: TextInputType.phone,
-              ),
-              DropdownButtonFormField<int>(
-                value: numberOfGuests,
-                onChanged: (value) {
-                  setState(() {
-                    numberOfGuests = value!;
-                  });
-                },
-                items: [1, 2, 3, 4].map((guests) {
-                  return DropdownMenuItem<int>(
-                    value: guests,
-                    child: Text('$guests Guest(s)'),
-                  );
-                }).toList(),
-                decoration: InputDecoration(labelText: 'Number of Guests'),
-              ),
-              SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () async {
-                  final pickedDate = await showDatePicker(
-                    context: context,
-                    initialDate: DateTime.now(),
-                    firstDate: DateTime.now(),
-                    lastDate: DateTime(2101),
-                  );
-                  if (pickedDate != null && pickedDate != eventDate) {
-                    setState(() {
-                      eventDate = pickedDate;
-                    });
-                  }
-                },
-                child: Text(
-                  eventDate == null
-                      ? 'Event Date'
-                      : 'Event Date: ${eventDate!.toLocal()}'.split(' ')[0],
-                ),
-              ),
-              SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () async {
-                  final pickedTime = await showTimePicker(
-                    context: context,
-                    initialTime: TimeOfDay.now(),
-                  );
-                  if (pickedTime != null && pickedTime != eventStartTime) {
-                    setState(() {
-                      eventStartTime = pickedTime;
-                    });
-                  }
-                },
-                child: Text(
-                  eventStartTime == null
-                      ? 'Event Starting Time'
-                      : 'Event Starting Time: ${eventStartTime!.format(context)}',
-                ),
-              ),
-              SizedBox(height: 16),
-              DropdownButtonFormField<String>(
-                value: selectedTotalHours,
-                onChanged: (value) {
-                  setState(() {
-                    selectedTotalHours = value!;
-                  });
-                },
-                items: ['2-4 hrs', '4-8 hrs', '8-16 hrs', '16-24 hrs']
-                    .map((hours) {
-                  return DropdownMenuItem<String>(
-                    value: hours,
-                    child: Text(hours),
-                  );
-                }).toList(),
-                decoration: InputDecoration(labelText: 'Total Hours'),
-              ),
-              SizedBox(height: 16),
-              Text(
-                'Total Cost: \$${(int.parse(widget.event['Cost']) * _calculateTotalHours(selectedTotalHours)).toInt()}',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () {
-                  bookEvent(
-                    context,
-                    update,
-                    widget.event['EventTypeId'],
-                    _emailController.text,
-                    _contactNoController.text,
-                    numberOfGuests,
-                    eventDate ?? DateTime.now(),
-                    eventStartTime ?? TimeOfDay.now(),
-                    selectedTotalHours,
-                    (int.parse(widget.event['Cost']) *
-                            _calculateTotalHours(selectedTotalHours))
-                        .toInt(),
-                    Provider.of<AuthProvider>(context, listen: false).userId ??
-                        '0',
-                  );
-                  print('Booking event: ${widget.event['EventType']}');
-                  Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => DashboardPage()));
-                },
-                child: Text('Book Event'),
-              ),
-            ],
-          ),
+    var authProvider = Provider.of<AuthProvider>(context);
+    return Theme(
+        data: ThemeData(
+          brightness:
+              authProvider.isDarkMode ? Brightness.dark : Brightness.light,
+          canvasColor:
+              authProvider.isDarkMode ? Colors.grey[850] : Colors.white,
         ),
-      ),
-    );
+        child: Scaffold(
+          appBar: AppBar(
+            title: Text('Event Booking - ${widget.event['EventType']}'),
+            centerTitle: true,
+          ),
+          body: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Image.network(
+                    '$_baseURL/assets/picture/EventType/' +
+                        widget.event['EventImage'],
+                    fit: BoxFit.cover,
+                    height: 300,
+                  ),
+                  SizedBox(height: 16),
+                  Text('Event Type: ${widget.event['EventType']}'),
+                  Text('Cost: \$${widget.event['Cost']}'),
+                  SizedBox(height: 16),
+                  Text(
+                    'Please enter your details to book the event:',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 16),
+                  TextFormField(
+                    controller: _emailController,
+                    decoration: InputDecoration(labelText: 'Email'),
+                    keyboardType: TextInputType.emailAddress,
+                  ),
+                  TextFormField(
+                    controller: _contactNoController,
+                    decoration: InputDecoration(labelText: 'Phone'),
+                    keyboardType: TextInputType.phone,
+                  ),
+                  DropdownButtonFormField<int>(
+                    value: numberOfGuests,
+                    onChanged: (value) {
+                      setState(() {
+                        numberOfGuests = value!;
+                      });
+                    },
+                    items: [1, 2, 3, 4].map((guests) {
+                      return DropdownMenuItem<int>(
+                        value: guests,
+                        child: Text('$guests Guest(s)'),
+                      );
+                    }).toList(),
+                    decoration: InputDecoration(labelText: 'Number of Guests'),
+                  ),
+                  SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () async {
+                      final pickedDate = await showDatePicker(
+                        context: context,
+                        initialDate: DateTime.now(),
+                        firstDate: DateTime.now(),
+                        lastDate: DateTime(2101),
+                      );
+                      if (pickedDate != null && pickedDate != eventDate) {
+                        setState(() {
+                          eventDate = pickedDate;
+                        });
+                      }
+                    },
+                    child: Text(
+                      eventDate == null
+                          ? 'Event Date'
+                          : 'Event Date: ${eventDate!.toLocal()}'.split(' ')[0],
+                    ),
+                  ),
+                  SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () async {
+                      final pickedTime = await showTimePicker(
+                        context: context,
+                        initialTime: TimeOfDay.now(),
+                      );
+                      if (pickedTime != null && pickedTime != eventStartTime) {
+                        setState(() {
+                          eventStartTime = pickedTime;
+                        });
+                      }
+                    },
+                    child: Text(
+                      eventStartTime == null
+                          ? 'Event Starting Time'
+                          : 'Event Starting Time: ${eventStartTime!.format(context)}',
+                    ),
+                  ),
+                  SizedBox(height: 16),
+                  DropdownButtonFormField<String>(
+                    value: selectedTotalHours,
+                    onChanged: (value) {
+                      setState(() {
+                        selectedTotalHours = value!;
+                      });
+                    },
+                    items: ['2-4 hrs', '4-8 hrs', '8-16 hrs', '16-24 hrs']
+                        .map((hours) {
+                      return DropdownMenuItem<String>(
+                        value: hours,
+                        child: Text(hours),
+                      );
+                    }).toList(),
+                    decoration: InputDecoration(labelText: 'Total Hours'),
+                  ),
+                  SizedBox(height: 16),
+                  Text(
+                    'Total Cost: \$${(int.parse(widget.event['Cost']) * _calculateTotalHours(selectedTotalHours)).toInt()}',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () {
+                      bookEvent(
+                        context,
+                        update,
+                        widget.event['EventTypeId'],
+                        _emailController.text,
+                        _contactNoController.text,
+                        numberOfGuests,
+                        eventDate ?? DateTime.now(),
+                        eventStartTime ?? TimeOfDay.now(),
+                        selectedTotalHours,
+                        (int.parse(widget.event['Cost']) *
+                                _calculateTotalHours(selectedTotalHours))
+                            .toInt(),
+                        Provider.of<AuthProvider>(context, listen: false)
+                                .userId ??
+                            '0',
+                      );
+                      print('Booking event: ${widget.event['EventType']}');
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => DashboardPage()));
+                    },
+                    child: Text('Book Event'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ));
   }
 
   int _calculateTotalHours(String selectedHours) {

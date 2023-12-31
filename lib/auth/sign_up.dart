@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'auth_provider.dart';
 import 'sign_in.dart';
 import 'package:http/http.dart' as http;
 
@@ -78,7 +80,16 @@ class _SignUpPageState extends State<SignUpPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    var authProvider = Provider.of<AuthProvider>(context);
+
+    return Theme(
+        data: ThemeData(
+          brightness:
+          authProvider.isDarkMode ? Brightness.dark : Brightness.light,
+          canvasColor:
+          authProvider.isDarkMode ? Colors.grey[850] : Colors.white,
+        ),
+        child: Scaffold(
       appBar: AppBar(
         title: const Text('Sign Up'),
       ),
@@ -188,7 +199,7 @@ class _SignUpPageState extends State<SignUpPage> {
           ),
         ),
       ),
-    );
+    ));
   }
 }
 

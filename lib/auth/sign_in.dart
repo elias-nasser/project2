@@ -40,49 +40,58 @@ class _SignInPageState extends State<SignInPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Sign In'),
-        centerTitle: true,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Form(
-              key: _formKey,
-              child: Column(
-                children: [
-                  TextFormField(
-                    controller: _emailController,
-                    decoration: InputDecoration(labelText: 'Email'),
-                  ),
-                  const SizedBox(height: 16.0),
-                  TextFormField(
-                    controller: _passwordController,
-                    decoration: InputDecoration(labelText: 'Password'),
-                    obscureText: true,
-                  ),
-                  const SizedBox(height: 32.0),
-                  ElevatedButton(
-                    onPressed:
-                    _loading ? null : () => _handleSubmitted(context),
-                    child: const Text('Sign In'),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 16.0),
-            if (!_loading && !_hasAccount())
-              TextButton(
-                onPressed: _navigateToSignUp,
-                child: const Text("Don't have an account? Create one"),
-              ),
-          ],
+    var authProvider = Provider.of<AuthProvider>(context);
+
+    return Theme(
+        data: ThemeData(
+          brightness:
+              authProvider.isDarkMode ? Brightness.dark : Brightness.light,
+          canvasColor:
+              authProvider.isDarkMode ? Colors.grey[850] : Colors.white,
         ),
-      ),
-    );
+        child: Scaffold(
+          appBar: AppBar(
+            title: const Text('Sign In'),
+            centerTitle: true,
+          ),
+          body: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Form(
+                  key: _formKey,
+                  child: Column(
+                    children: [
+                      TextFormField(
+                        controller: _emailController,
+                        decoration: InputDecoration(labelText: 'Email'),
+                      ),
+                      const SizedBox(height: 16.0),
+                      TextFormField(
+                        controller: _passwordController,
+                        decoration: InputDecoration(labelText: 'Password'),
+                        obscureText: true,
+                      ),
+                      const SizedBox(height: 32.0),
+                      ElevatedButton(
+                        onPressed:
+                            _loading ? null : () => _handleSubmitted(context),
+                        child: const Text('Sign In'),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16.0),
+                if (!_loading && !_hasAccount())
+                  TextButton(
+                    onPressed: _navigateToSignUp,
+                    child: const Text("Don't have an account? Create one"),
+                  ),
+              ],
+            ),
+          ),
+        ));
   }
 
   void _handleSubmitted(BuildContext context) async {
@@ -124,22 +133,30 @@ Future<void> signInUser(BuildContext context, Function(String text) updateUser,
     'password': password,
   };
 
-  final response = await http.post(
-    Uri.parse('$_baseURL/loginValidation.php'),
-    body: json.encode(data),
-  );
+  try {
+    final response = await http.post(
+      Uri.parse('$_baseURL/loginValidation.php'),
+      body: json.encode(data),
+    );
 
-  if (response.statusCode == 200) {
-    final jsonResponse = convert.jsonDecode(response.body);
-    if (jsonResponse['status'] == 'success') {
-      final firstName = jsonResponse['FirstName'];
-      final userId = jsonResponse['UserId'];
-      authProvider.login(firstName, userId);
+    if (response.statusCode == 200) {
+      final jsonResponse = convert.jsonDecode(response.body);
+
+      if (jsonResponse['status'] == 'success') {
+        final firstName = jsonResponse['FirstName'];
+        final userEmail = jsonResponse['Email'];
+        final profileImage = jsonResponse['ProfileImage'];
+        final userId = jsonResponse['UserId'];
+
+        authProvider.login(firstName, userId, userEmail, profileImage);
+      }
+
       updateUser(jsonResponse['message']);
+    } else {
+      updateUser(
+          'Failed to Login. Please try again later. ${response.statusCode}');
     }
-    updateUser(jsonResponse['message']);
-  } else {
-    updateUser(
-        'Failed to Login. Please try again later.${response.statusCode}');
+  } catch (error) {
+    updateUser('An error occurred: $error');
   }
 }
