@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:project2/dashboard.dart';
 import 'package:project2/events.dart';
@@ -24,7 +26,7 @@ class _navigationDrawerState extends State<navigationDrawer> {
     String? fName = authProvider.firstName;
     String? email = authProvider.email;
     String? profileImage = authProvider.profileImage;
-
+    Random random = Random();
     return Drawer(
       child: Theme(
         data: ThemeData(
@@ -44,7 +46,7 @@ class _navigationDrawerState extends State<navigationDrawer> {
                 ),
               ),
               decoration: BoxDecoration(
-                color: authProvider.isDarkMode ? Colors.grey[650] : Colors.blue,
+                color: authProvider.isDarkMode ? Colors.grey[650] : Color.fromRGBO(random.nextInt(256), random.nextInt(256), random.nextInt(256), 1.0),
               ),
             ),
             ListTile(
