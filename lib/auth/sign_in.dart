@@ -2,6 +2,7 @@ import 'dart:convert' as convert;
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:project2/auth/verify_account.dart';
 import 'package:provider/provider.dart';
 import 'auth_provider.dart';
 import '../home.dart';
@@ -149,6 +150,11 @@ Future<void> signInUser(BuildContext context, Function(String text) updateUser,
         final userId = jsonResponse['UserId'];
 
         authProvider.login(firstName, userId, userEmail, profileImage);
+      }else if (jsonResponse['status'] == 'error' && jsonResponse['message'] == 'User is not active') {
+        // Redirect to verifyAccount
+        updateUser(jsonResponse['message']);
+        verifyAccount(context, jsonResponse['FirstName'], jsonResponse['UserId'], jsonResponse['Email'], jsonResponse['ProfileImage']);
+        return;
       }
 
       updateUser(jsonResponse['message']);
@@ -159,4 +165,12 @@ Future<void> signInUser(BuildContext context, Function(String text) updateUser,
   } catch (error) {
     updateUser('An error occurred: $error');
   }
+}
+void verifyAccount(BuildContext context, String firstName, String userId, String email, String profileImage) {
+  // Implement your logic to navigate or handle user verification
+  // For example:
+  Navigator.push(
+    context,
+    MaterialPageRoute(builder: (context) => VerifyAccountPage(email: email, firstName: firstName, profileImage: profileImage, userId: userId)),
+  );
 }

@@ -171,6 +171,9 @@ class _RoomBookingPageState extends State<RoomBookingPage> {
                           Provider.of<AuthProvider>(context, listen: false)
                                   .userId ??
                               '0',
+                          Provider.of<AuthProvider>(context, listen: false)
+                              .email ??
+                              '0',
                         );
                         update('Booking room: ${widget.room['RoomType']}');
                         Navigator.of(context).push(MaterialPageRoute(
@@ -189,12 +192,14 @@ void bookRoom(
     Function(String text) updateUser,
     String room,
     String email,
+
     String contactNo,
     int numberOfGuests,
     DateTime checkIn,
     DateTime checkOut,
     int totalCost,
-    String userId) async {
+    String userId,
+    String userEmail) async {
   try {
     final url = Uri.parse('$_baseURL/addBookRoom.php');
 
@@ -204,12 +209,14 @@ void bookRoom(
       body: jsonEncode({
         'roomTypeId': room,
         'email': email,
+        'userEmail':userEmail,
         'contactno': contactNo,
         'no_of_guest': numberOfGuests,
         'checkIn': checkIn.toIso8601String(),
         'checkOut': checkOut.toIso8601String(),
         'totalCost': totalCost,
         'userId': userId,
+        'key':'your_key',
       }),
     );
     print(room);
